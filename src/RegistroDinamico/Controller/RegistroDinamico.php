@@ -14,23 +14,32 @@ class RegistroDinamico {
 	public function  init(){
 		$ip       = $_SERVER['REMOTE_ADDR'];
 		$servidor = $_GET['server'];
+		
 		if($this->db->isCambioIp($ip,$servidor)){
 			// ejecutamos proceso de actualizacion para los dominios asociados a la maquina	
-			$this->procesoDns($ip,$servidor);
-				
-		}else{
+			$url = $this->procesoDns($ip,$servidor);
+			$this->db->setIp($ip,$servidor);
+			    echo json_encode(array('estado'=>1,'urls'=>$url));
+			}else{
 			// solo guardamos
+			 	echo json_encode(array('estado'=>0));
 			$this->db->setIp($ip,$servidor);
 		}
+		//end
+		$this->db->desconectar();
 		return true;
 	}
 	public function procesoDns($ip,$servidor){
+		$urls = array();
 		$urlDns = $this->db->getUrl($servidor);
-		
-		foreach ($urlDns as  $url) {
-		  $this->curl->callUrl($url['url']);	 
-		}
-		 $this->db->desconectar(); 
+		if(!$urlDns)
+			return array();
+		while ($fila = mysql_fetch_array($urlDns, MYSQL_ASSOC)) {
+			   $urls[] = array('url'=>$fila['url']);
+		 }
+		return $urls;
 	}
+	
+	
 	
 }
