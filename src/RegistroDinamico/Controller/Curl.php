@@ -18,7 +18,7 @@ class Curl {
 	 }
 	 
 	 public function callUrlServer(){
-	 	$url   = "http://172.16.1.177/registro/Registro.php?server=uno";
+	 	$url   = URL_SERVER;
 	 	$agent ='RegistroDinamico v0.1';
 		
 		$ch = \curl_init();
